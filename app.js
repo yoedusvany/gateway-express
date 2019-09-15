@@ -20,7 +20,7 @@ app.get('/', (req, res) => res.send('Hello World!'));
 app.use('/api', gatewayRoutes,deviceRoutes);
 
 //connection
-mongoose.connect('mongodb://localhost:27017/gateway', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
+mongoose.connect(config.mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
     .then(() => {        // Cuando se realiza la conexión, lanzamos este mensaje por consola
         console.log("Db Connection successful")
     })
