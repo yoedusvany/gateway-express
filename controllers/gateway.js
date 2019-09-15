@@ -34,22 +34,48 @@ GatewayController.getGateway = async (req, res) => {
 
 //Add gateway
 GatewayController.addGateway = async (req, res) => {
+    let result ={} ;
+    
     try {
-        if (!req.body.gw.humanName || !req.body.gw.ip) {
-            res.status(403).end();
+        if (!req.body.humanName || !req.body.ip) {
+            return res.status(403).end();
         }
 
-        gatewayModel.find({ip: req.body.gw.ip}, function (err, docs) {
-            if (err) return res.status(403).end();
+        gatewayModel.find({ip: req.body.ip}, function (err, docs) {
+            if (err) {
+                result = {
+                    result : false,
+                    text:   "Some error with the database"
+                }
+                return res.json(result);
+            }
             
-            if ( docs ) return res.status(403).end();
+            if (Object.keys(docs).length > 0) {
+                result = {
+                    result : false,
+                    text:   "This ip exists"
+                }
+                return res.json(result);
+            }
 
-            let newGateway = new gatewayModel(req.body.gw);
+            let newGateway = new gatewayModel(req.body);
+            console.log(newGateway);
+            
 
             newGateway.save(function (err, gw) {
-                if (err) return console.error(err);
-                return res.status(200).end();
-                console.log(gw.humanName + " saved to database.");
+                if (err) {
+                    result = {
+                        result : false,
+                        text:   "Some error with the request"
+                    }
+                    return res.json(result);
+                }
+
+                result = {
+                    result : true,
+                    text:   "Gateway added"
+                }
+                return res.json(result);
             });
         });
 
