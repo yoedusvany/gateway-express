@@ -135,13 +135,22 @@ DeviceController.updateDevice = async (req, res) => {
 
 //Remove a device
 DeviceController.deleteDevice = async (req, res) => {
+    let result ={} ;
     try {
         deviceModel.findByIdAndRemove({ _id: req.params.id }, function (err, gw) {
             if (err) {
-                res.status(500).send(err);
+                result = {
+                    result : false,
+                    text:   "Some error on database."
+                }
+                return res.json(result);
             }
 
-            return res.status(200).end();
+            result = {
+                result : true,
+                text:   "Device removed."
+            }
+            return res.json(result);
         });
     }
     catch (err) {

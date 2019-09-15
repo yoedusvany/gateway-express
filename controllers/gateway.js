@@ -1,4 +1,5 @@
 import gatewayModel from '../models/gateway';
+import deviceModel from '../models/device';
 
 const GatewayController = {};
 
@@ -59,8 +60,6 @@ GatewayController.addGateway = async (req, res) => {
             }
 
             let newGateway = new gatewayModel(req.body);
-            console.log(newGateway);
-            
 
             newGateway.save(function (err, gw) {
                 if (err) {
@@ -118,13 +117,37 @@ GatewayController.updateGateway = async (req, res) => {
 
 //Remove a device
 GatewayController.deleteGateway = async (req, res) => {
+    let result ={} ;
+    console.log(req.params.id);
+    
+    
     try {
-        gatewayModel.findByIdAndRemove({ _id: req.params.id }, function(err,gw){
+        deviceModel.find({ gw_id: req.params.id }).remove( function(err, dev){
+            console.log(dev);
+            
             if (err) {
-                res.status(500).send(err);
+                result = {
+                    result : true,
+                    text:   "Some error on database"
+                }
+                return res.json(result);
             }
 
-            return res.status(200).end();
+            gatewayModel.findByIdAndRemove({ _id: req.params.id }, function(err,gw){
+                if (err) {
+                    result = {
+                        result : true,
+                        text:   "Some error on database"
+                    }
+                    return res.json(result);
+                }
+    
+                result = {
+                    result : true,
+                    text:   "Gateway removed"
+                }
+                return res.json(result);
+            });
         });
     }
     catch (err) {
